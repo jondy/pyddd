@@ -1,4 +1,5 @@
 pyddd
 =====
 
-A gdb extension used to debug python scripts as c/c++.
+pyddd is a super-GDB debugger which could debug python scripts as the
+same way to debug c program in the same inferior.
