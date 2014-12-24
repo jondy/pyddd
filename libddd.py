@@ -78,9 +78,9 @@ def list_python_breakpoints(bpnums=None):
         if bp.is_valid() and (bpnums is None or bp.bpnum in bpnums):
             yield bp
 
-def find_python_breakpoint(bpnum, locnum=0):
+def find_python_breakpoint(bpnum):
     for bp in _python_breakpoint_table:
-        if bp.is_valid() and bp.bpnum == bpnum and bp.locnum == locnum:
+        if bp.is_valid() and bp.bpnum == bpnum:
             return bp
 
 def list_python_catchpoints(name=None, bpnums=None):
@@ -98,28 +98,9 @@ def get_symbol_table(filename):
 def resolve_filename_breakpoints(filename):
     for bp in list_pending_python_breakpoints(filename):
         if bp._resolve(get_symbol_table(filename)):
-            python_ipa_upload_breakpoint(bp)
+            bp._load()
 
-def python_ipa_upload_breakpoint(bp):
-    try:
-        if bp.rindex == -1:
-            fmt = 'pyddd_ipa_insert_breakpoint('
-        else:
-            fmt = 'pyddd_ipa_update_breakpoint($rindex,'
-        fmt += ' $bpnum, $locnum, $thread, $condition, ' \
-               ' $ignore_count, $enabled, $lineno, $filename)'
-        bp.rindex = gdb_eval_int(fmt.substitute(bp.__dict__, locnum=0))
-    except Exception:
-        pass
-
-def python_ipa_remove_breakpoint(bp):
-    try:
-        if bp.rindex != -1:
-            gdb.execute('call pyddd_ipa_remove_breakpoint(%d)' % bp.rindex)
-    except Exception:
-        pass
-
-def python_ipa_upload_catchpoint():
+def python_ipa_load_catchpoint():
     try:
         gdb.execute('set var pyddd_ipa_python_catch_exceptions = %s' % \
             build_catch_patterns('exception'))
@@ -172,6 +153,8 @@ class PythonInternalExceptionCatchpoint (gdb.Breakpoint):
         for bp in bplist:
             _python_catchpoint_table.remove(bp)
             gdb_output ('Remove temporary catchpoint #%d' % bp.bpnum)
+        if len(bplist):
+            python_ipa_load_catchpoint()
 
 class PythonInternalCallCatchpoint (gdb.Breakpoint):
     '''This is an internal breakpoint to catch function call. '''
@@ -199,6 +182,8 @@ class PythonInternalCallCatchpoint (gdb.Breakpoint):
         for bp in bplist:
             _python_catchpoint_table.remove(bp)
             gdb_output ('Remove temporary catchpoint #%d' % bp.bpnum)
+        if len(bplist):
+            python_ipa_load_catchpoint()
 
 class PythonInternalLineBreakpoint (gdb.Breakpoint):
     '''This is an internal breakpoint. '''
@@ -215,18 +200,23 @@ class PythonInternalLineBreakpoint (gdb.Breakpoint):
         bpnum = gdb_eval_int('pyddd_ipa_current_breakpoint->bpnum')
         locnum = gdb_eval_int('pyddd_ipa_current_breakpoint->locnum')
         # update all the python breakpoints
-        bp = find_python_breakpoint(bpnum, locnum)
+        bp = find_python_breakpoint(bpnum)
         if bp is None:
             gdb_output ('Python breakpoint %d (not found)\n' % bpnum)
         else:
             # print bpinfo
             bp._info()
             # if bp is temporary, remove it (use my own flag)
-            if bp.temporaty:
+            if bp.temporary:
                 _python_breakpoint_table.pop(bp)
             # if bp.enabled < 0, it will be disabled when increased to 0
             elif bp.enabled < 0:
                 bp.enabled += 1
+        # update hit count
+        rtable = gdb.parse_and_eval('pyddd_ipa_breakpoint_table')
+        for bp in list_python_breakpoints():
+            if bp.rindex != -1:
+                bp.hit_count = rtable[bp.rindex]['hit_count']
         python_breakpoint_hit_command_list()
         return True
 
@@ -413,6 +403,7 @@ class PythonBreakpoint (object):
         self.temporary = temporary
         self.thread = 0
         self.ignore_count = 0
+        self.hit_count = 0
         self.condition = 0
         self.visible = 1
 
@@ -510,17 +501,31 @@ class PythonBreakpoint (object):
                 self.state = 2
                 return True
 
-    def _hit_count(self):
+    def _load(self):
         if self.rindex == -1:
-            return 'N/A'
+            fmt = 'pyddd_ipa_insert_breakpoint('
         else:
-            return gdb_eval_str(
-                'pyddd_ipa_breakpoint_list[%d]->hit_count' % self.rindex
+            fmt = 'pyddd_ipa_update_breakpoint($rindex, '
+        fmt += '$bpnum, $locnum, $thread, $condition, ' \
+               ' $ignore_count, $enabled, $lineno, "$filename")'
+        try:
+            self.rindex = gdb_eval_int(
+                string.Template(fmt).substitute(self.__dict__, locnum=0)
                 )
+        except Exception:
+            self.rindex = -1
+
+    def _unload(self):
+        if self.rindex == -1:
+            return
+        try:
+            gdb.execute('call pyddd_ipa_remove_breakpoint(%d)' % self.rindex)
+        except Exception:
+            pass
 
     def _info(self):
-        gdb_output ('bpnum=%d, location=%s, hit_count=%d' % \
-            (self.bpnum, self.location, self._hit_count))
+        gdb_output ('bpnum=%d, location=%s, hit_count=%s' % \
+            (self.bpnum, self.location, self.hit_count))
 
 #################################################################
 #
@@ -569,7 +574,7 @@ class PythonIPADownloadDataCommand(gdb.Command):
     def invoke(self, args, from_tty):
         self.dont_repeat()
         # upload catchpoints to python-ipa
-        python_ipa_upload_catchpoint()
+        python_ipa_load_catchpoint()
         # upload breakpoints to python-ipa
         for bp in list_python_breakpoints():
             if bp.filename is not None:
@@ -822,7 +827,7 @@ class PythonCatchpointCommand(gdb.Command):
                 '%s #%d, catch %s' % (prefix, cp.bpnum, spec)
                 )
         if args != '':
-            python_ipa_upload_catchpoint()
+            python_ipa_load_catchpoint()
 
     def _info(self, arg=None):
         for bp in list_python_catchpoints(arg):
@@ -888,7 +893,7 @@ class PythonBreakpointCommand(gdb.Command):
         except IndexError:
             pass
         _python_breakpoint_table.append(bp)
-        python_ipa_upload_breakpoint(bp)
+        bp._load()
         bp._info()
 
 class PythonTempBreakpointCommand(PythonBreakpointCommand):
@@ -948,7 +953,7 @@ class PythonClearCommand(gdb.Command):
         for bp in bplist:
             _python_breakpoint_table.remove(bp)
             gdb_output('Remove breakpoint #%d' % bp.bpnum)
-            python_ipa_remove_breakpoint(bp)
+            bp._unload()
 
     def _clear_catchpoint(self, name):
         bplist = []
@@ -959,7 +964,7 @@ class PythonClearCommand(gdb.Command):
             _python_catchpoint_table.remove(bp)
             gdb_output('Remove catchpoint #%d' % bp.bpnum)
         # upload catchpoint
-        python_ipa_upload_catchpoint()
+        python_ipa_load_catchpoint()
 
 class PythonDeleteCommand(gdb.Command):
     '''
@@ -1007,7 +1012,7 @@ class PythonDeleteCommand(gdb.Command):
             for bp in list_python_breakpoints(arglist):
                 _python_breakpoint_table.remove(bp)
                 gdb_output ('Remove breakpoint #%d' % bp.bpnum)
-                python_ipa_remove_breakpoint(bp)
+                bp._unload()
 
     def _delete_catchpoints(self, args):
         if args == '':
@@ -1018,7 +1023,7 @@ class PythonDeleteCommand(gdb.Command):
                 _python_catchpoint_table.remove(bp)
                 gdb_output ('Remove catchpoint #%d' % bp.bpnum)
         # upload catchpoints
-        python_ipa_upload_catchpoint()
+        python_ipa_load_catchpoint()
 
 class PythonEnableCommand(gdb.Command):
     '''
@@ -1073,7 +1078,7 @@ class PythonEnableCommand(gdb.Command):
             if temporary:
                 bp.temporary = temporary
                 gdb_output ('Make breakpoint #%d volatile' % bp.bpnum)
-            python_ipa_upload_breakpoint(bp)
+            bp._load()
 
 class PythonDisableCommand(gdb.Command):
     '''
@@ -1101,7 +1106,7 @@ class PythonDisableCommand(gdb.Command):
         for bp in list_python_breakpoints(arglist):
             bp.enabled = 0
             gdb_output ('Disable breakpoint #%d' % bp.bpnum)
-            python_ipa_upload_breakpoint(bp)
+            bp._load()
 
 class PythonInfoCommand(gdb.Command):
     '''
@@ -1159,10 +1164,10 @@ class PythonInfoCommand(gdb.Command):
                 bp._info()
         else:
             if ' ' in args:
-                arglist = [int(x) for x in args.split()[1:]]
+                arglist = [int(x) for x in args.split() if x.isdigital()]
             else:
                 arglist = None
-            for bp in list_python_breakpoints(None, arglist):
+            for bp in list_python_breakpoints(arglist):
                 bp._info()
 
 #################################################################

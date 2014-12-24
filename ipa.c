@@ -214,19 +214,18 @@ pyddd_ipa_trace_trampoline(PyObject *self,
             || strcmp(bp->filename, _filename))
           continue;
 
+        pthread_mutex_lock (&mutex_hit_count);
+        bp->hit_count ++;
         /* Take ignore_count into account */
         if (bp->ignore_count) {
-          pthread_mutex_lock (&mutex_hit_count);
-          bp->hit_count ++;
-          if (bp->hit_count == bp->ignore_count) {
+          if (bp->hit_count == bp->ignore_count)
             bp->hit_count = 0;
-            pthread_mutex_unlock (&mutex_hit_count);
-          }
           else {
             pthread_mutex_unlock (&mutex_hit_count);
             continue;
           }
         }
+        pthread_mutex_unlock (&mutex_hit_count);
 
         /* Eval breakpoint condition */
         if (bp->condition) {
