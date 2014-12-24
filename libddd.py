@@ -196,27 +196,25 @@ class PythonInternalLineBreakpoint (gdb.Breakpoint):
         self.silent = True
 
     def stop (self):
+        # update hit count of all breakpoints from pyddd ipa
+        rtable = gdb.parse_and_eval('pyddd_ipa_breakpoint_table')
+        for bp in list_python_breakpoints():
+            if bp.rindex != -1:
+                bp.hit_count = rtable[bp.rindex]['hit_count']
         # stop at bpnum
         bpnum = gdb_eval_int('pyddd_ipa_current_breakpoint->bpnum')
         locnum = gdb_eval_int('pyddd_ipa_current_breakpoint->locnum')
         # update all the python breakpoints
         bp = find_python_breakpoint(bpnum)
         if bp is None:
-            gdb_output ('Python breakpoint %d (not found)\n' % bpnum)
+            gdb_output ('Breakpoint #%d (not found)\n' % bpnum)
         else:
             # print bpinfo
             bp._info()
-            # if bp is temporary, remove it (use my own flag)
+            # if bp is temporary, remove it
             if bp.temporary:
                 _python_breakpoint_table.pop(bp)
-            # if bp.enabled < 0, it will be disabled when increased to 0
-            elif bp.enabled < 0:
-                bp.enabled += 1
-        # update hit count
-        rtable = gdb.parse_and_eval('pyddd_ipa_breakpoint_table')
-        for bp in list_python_breakpoints():
-            if bp.rindex != -1:
-                bp.hit_count = rtable[bp.rindex]['hit_count']
+                bp._unload()
         python_breakpoint_hit_command_list()
         return True
 
@@ -578,7 +576,7 @@ class PythonIPADownloadDataCommand(gdb.Command):
         # upload breakpoints to python-ipa
         for bp in list_python_breakpoints():
             if bp.filename is not None:
-                pyddd_ipa_upload_breakpoint(bp)
+                bp._load()
             elif bp.multiloc is not None:
                 raise NotImplementedError('multi-locations')
 
@@ -649,9 +647,8 @@ class PythonSymbolFileCommand(gdb.Command):
                               gdb.COMMAND_FILES,
                               gdb.COMPLETE_FILENAME,
                               )
-        self._imbp = PythonInternalImportModuleBreakpoint(
-            PythonInternalNewCodeObjectBreakpoint()
-            )
+        self._cobp = PythonInternalNewCodeObjectBreakpoint()
+        self._imbp = PythonInternalImportModuleBreakpoint(self._cobp)
 
     def invoke(self, args, from_tty):
         self.dont_repeat()
@@ -661,6 +658,7 @@ class PythonSymbolFileCommand(gdb.Command):
             cmd, args = args, ''
         if 'disable'.startswith(cmd):
             self._imbp.enabled = False
+            self._cobp.enabled = False
             gdb_output('Disabled autoload imported symbol')
         elif 'enable'.startswith(cmd):
             self._imbp.enabled = True

@@ -199,8 +199,11 @@ pyddd_ipa_trace_trampoline(PyObject *self,
         if (!bp->bpnum
             || !bp->enabled
             || (bp->thread_id && bp->thread_id != thread)
-            || _lineno != bp->lineno)
+            || _lineno != bp->lineno) {
+          if (bp->enabled < 0) ++(bp->enabled);
           continue;
+        }
+        if (bp->enabled < 0) ++(bp->enabled);
 
         /* Good preformace, but need more complex mechanism */
         if (bp->co_filename && bp->co_filename != co_filename)
