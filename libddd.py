@@ -8,7 +8,7 @@
 #                                                           #
 #      pyddd                                                #
 #                                                           #
-#      Version: 0.1.1                                       #
+#      Version: 0.1.2                                       #
 #                                                           #
 #############################################################
 #
@@ -656,10 +656,10 @@ class PythonSymbolFileCommand(gdb.Command):
             cmd, args = args, ''
         if 'disable'.startswith(cmd):
             self._imbp.enabled = False
-            gdb_ouput('Disabled autoload imported symbol')
+            gdb_output('Disabled autoload imported symbol')
         elif 'enable'.startswith(cmd):
             self._imbp.enabled = True
-            gdb_ouput('Enabled autoload imported symbol')
+            gdb_output('Enabled autoload imported symbol')
         elif 'clear'.startswith(cmd):
             self._clear(args)
         elif 'add'.startswith(cmd):

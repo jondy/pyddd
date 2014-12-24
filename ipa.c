@@ -5,7 +5,7 @@
  #                                                                       #
  #              pyddd                                                    #
  #                                                                       #
- #              Version: 0.1.1                                           #
+ #              Version: 0.1.2                                           #
  #                                                                       #
  *************************************************************************/
 
@@ -31,12 +31,12 @@
  *
  * Change Logs:
  *
- *   - Version 0.1.1    jondy.zhao@gmail.com    2014-12-18
+ *   - Version 0.1.1    jondy.zhao@gmail.com    2014-12-24
  *     * First release.
  *
  */
 #include "ipa.h"
-static const char *PYDDD_IPA_VERSION = "0.1.1";
+static const char *PYDDD_IPA_VERSION = "0.1.2";
 
 #if defined(TEST_IPA)
 #define static
