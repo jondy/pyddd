@@ -569,6 +569,8 @@ class PythonIPALoadDataCommand(gdb.Command):
         python_ipa_load_catchpoint()
         # upload breakpoints to python-ipa
         for bp in list_python_breakpoints():
+            # Reset rindex, force new breakpoint in ipa
+            bp.rindex = -1
             if bp.filename is not None:
                 bp._load()
             elif bp.multiloc is not None:
