@@ -39,7 +39,7 @@ define python-ipa-initialize
   set var pyddd_ipa_pyerr_occurred = PyErr_Occurred
 
   # upload breakpoints and catchpoints
-  python-ipa-download-data
+  python-ipa-load-data
 
   # clear python frame
   python-ipa-frame teardown

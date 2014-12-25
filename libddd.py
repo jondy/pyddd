@@ -200,7 +200,7 @@ class PythonInternalLineBreakpoint (gdb.Breakpoint):
         rtable = gdb.parse_and_eval('pyddd_ipa_breakpoint_table')
         for bp in list_python_breakpoints():
             if bp.rindex != -1:
-                bp.hit_count = rtable[bp.rindex]['hit_count']
+                bp.hit_count = int(rtable[bp.rindex]['hit_count'])
         # stop at bpnum
         bpnum = gdb_eval_int('pyddd_ipa_current_breakpoint->bpnum')
         locnum = gdb_eval_int('pyddd_ipa_current_breakpoint->locnum')
@@ -554,17 +554,17 @@ class PythonBreakpoint (object):
 #    py-symbol-file
 #    py-info
 #
-class PythonIPADownloadDataCommand(gdb.Command):
+class PythonIPALoadDataCommand(gdb.Command):
     '''
     Upload python breakpoints and catchpoints to python-ipa
     when python library is loaded (internaly used only).
 
-    Usage: python-ipa-download-data
+    Usage: python-ipa-load-data
     '''
 
     def __init__(self):
         gdb.Command.__init__ (self,
-                              'python-ipa-download-data',
+                              'python-ipa-load-data',
                               gdb.COMMAND_NONE,
                               gdb.COMPLETE_NONE,
                               )
@@ -1758,7 +1758,7 @@ PythonInternalLineBreakpoint()
 PythonInternalVolatileBreakpoint()
 
 # Register commands
-PythonIPADownloadDataCommand()
+PythonIPALoadDataCommand()
 PythonIPAFrameCommand()
 PythonFileCommand()
 PythonSymbolFileCommand()
