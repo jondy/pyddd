@@ -66,6 +66,7 @@ gdb_eval = lambda s : gdb.parse_and_eval(s)
 gdb_eval_str = lambda s : gdb.parse_and_eval(s).string()
 gdb_eval_int = lambda s : int(gdb.parse_and_eval(s))
 gdb_output = lambda s, sep='\n' : sys.stdout.write (s + sep)
+target_has_execution = lambda : gdb.selected_inferior ().pid
 
 def list_pending_python_breakpoints(filename=None):
     for bp in _python_breakpoint_table:
@@ -101,13 +102,11 @@ def resolve_filename_breakpoints(filename):
             bp._load()
 
 def python_ipa_load_catchpoint():
-    try:
+    if target_has_execution():
         gdb.execute('set var pyddd_ipa_python_catch_exceptions = %s' % \
             build_catch_patterns('exception'))
         gdb.execute('set var pyddd_ipa_python_catch_functions = %s' % \
             build_catch_patterns('call'))
-    except Exception:
-        pass
 
 def build_catch_patterns(name):
     return '"%s"' % ' '.join(
@@ -500,26 +499,21 @@ class PythonBreakpoint (object):
                 return True
 
     def _load(self):
-        if self.rindex == -1:
-            fmt = 'pyddd_ipa_insert_breakpoint('
-        else:
-            fmt = 'pyddd_ipa_update_breakpoint($rindex, '
-        fmt += '$bpnum, $locnum, $thread, $condition, ' \
-               ' $ignore_count, $enabled, $lineno, "$filename")'
-        try:
-            self.rindex = gdb_eval_int(
-                string.Template(fmt).substitute(self.__dict__, locnum=0)
-                )
-        except Exception:
-            self.rindex = -1
+        if target_has_execution():
+            s = string.Template(
+                '$bpnum, $locnum, $thread, $condition, ' \
+                ' $ignore_count, $enabled, $lineno, "$filename"'
+                ).substitute(self.__dict__, locnum=0)
+            if self.rindex == -1:
+                i = gdb_eval_int('pyddd_ipa_insert_breakpoint(%s)' % s)
+                self.rindex = i
+            else:
+                gdb.execute('call pyddd_ipa_update_breakpoint(%d, %s)' \
+                    % (self.rindex, s))
 
     def _unload(self):
-        if self.rindex == -1:
-            return
-        try:
+        if target_has_execution() and self.rindex != -1:
             gdb.execute('call pyddd_ipa_remove_breakpoint(%d)' % self.rindex)
-        except Exception:
-            pass
 
     def _info(self):
         gdb_output ('bpnum=%d, location=%s, hit_count=%s' % \
