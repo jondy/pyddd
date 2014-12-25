@@ -1,6 +1,5 @@
-=========================
- Python Debugger - PYDDD
-=========================
+Python Debugger - PYDDD
+=======================
 
 *PYDDD* is a super-GDB debugger which could debug python scripts as
 the same way to debug c program in the same inferior.
@@ -15,9 +14,8 @@ variable of PyObject* will show the value of both c pointer and python
 type (a list or dict etc.). And frame will show both c frame and
 python frame.
 
-=====================
- Start Python Script
-=====================
+Start Python Script
+===================
 
 .. _py-file:
 
@@ -40,7 +38,7 @@ Set arguments of python scripts.
 Use the py-run command to run your python script. You must first
 specify python program by command exec-file.
 
-Here is an example,
+Here is an example::
 
   (gdb) exec-file C:/Python27/python.exe
   (gdb) py-exec-args -i
@@ -48,7 +46,7 @@ Here is an example,
   (gdb) py-args -k
   (gdb) py-run
 
-  gdb will execute the following shell command:
+gdb will execute the following shell command::
 
   $ C:/Python27/python.exe -i foo.py -k
 
@@ -63,9 +61,8 @@ Start python script and stop at the beginning of the main script.
 Set arguments for run python, not for python scripts.
 
 
-====================
- Stop Python Script
-====================
+Stop Python Script
+==================
 
 Breakpoint Location
 -------------------
@@ -268,9 +265,8 @@ action.
 To make the breakpoint stop the next time it is reached, specify a
 count of zero.
 
-===========================
- Python Catchpoint Command
-===========================
+Python Catchpoint Command
+=========================
 
 * py-catch exception *
 * py-catch exception name
@@ -305,9 +301,8 @@ automatically deleted after the first time the event is caught.
 
 * py-catch info
 
-========================
- Running Script Command
-========================
+Running Script Command
+======================
 
 * py-continue [ignore-count]
 
@@ -380,9 +375,8 @@ similar to until, but advance will not skip over recursive function
 calls, and the target location doesn’t have to be in the same frame as
 the current one.
 
-======================
- Python Frame Command
-======================
+Python Frame Command
+====================
 
 * py-frame [framespec]
 
@@ -437,9 +431,8 @@ Similar, but print only the outermost n frames.
 Print the values of the local variables also. As described above, n
 specifies the number of frames to print.
 
-=====================
- Python Data Command
-=====================
+Python Data Command
+===================
 
 * py-print /r expression
 
@@ -462,45 +455,33 @@ Print all globals as str(PyObject*)
 
 Look up the given global python variable name, and print it
 
-=======================
- Alert Python Variable
-=======================
+Alert Python Variable
+=====================
 
 * py-set-var name expression
 * py-set-var /global name expression
 
-=======================
- Show Debug Parameters
-=======================
+Show Debug Parameters
+=====================
 
 * py-info args
 * py-info exec-args
 * py-info main-script
 
-=========
- Example
-=========
+Example
+=======
 
-foo.py,
-helloext.pyd or helloext.so, from helloext.c
-cowboy.py, usee multi-thread
+beer.py queens.py life.py
 
-$ gdb
 (gdb) source init.gdb
 
 (gdb) exec-file python
-(gdb) py-exec-args -i
+(gdb) py-file beer.py
+(gdb) py-start
 
-(gdb) py-file hello.py
-(gdb) py-args --bind -k
 
-(gdb) ... (Add breakpoints)
-
-(gdb) py-run
-
-==============
- Known Issues
-==============
+Known Issues
+============
 
 * Missing object entry in multi-thread script maybe.
 
@@ -515,9 +496,8 @@ Because we hook PyCode_New by command list of c breakpoint, in
 non-stop mode, that c breakpoint is ignored. So when PyCode_New
 called, no object entry is created.
 
-==========
- Appendix
-==========
+Appendix
+========
 
 * How to find address of "trace_trampoline" from python library in gdb
 
@@ -566,7 +546,7 @@ Before PyEval_SetTrace, push $0x1e0d6dfe, this is what I want.
 (gdb) b *0x1e0d6dfe
 (gdb) call PyEval_SetTrace(0x1e0d6dfe, 0)
 
-* Build gdb with python and python ipa::
+* Build gdb with python and python ipa ::
 
   $ tar xzf gdb-7.8.1.tar.gz
   $ cd gdb-7.8.1
@@ -581,7 +561,7 @@ Before PyEval_SetTrace, push $0x1e0d6dfe, this is what I want.
   $ i686-pc-mingw32-gcc -shared  -g -I/cygdrive/c/Python27/include \
       ipa.c -Wl,-lpthread -o pyddd-ipa.dll
 
-* Print PyCodeObject created by PyCode_New::
+* Print PyCodeObject created by PyCode_New ::
 
   PyCode_New(int argcount, int nlocals, int stacksize, int flags,
              PyObject *code, PyObject *consts, PyObject *names,
@@ -589,24 +569,24 @@ Before PyEval_SetTrace, push $0x1e0d6dfe, this is what I want.
              PyObject *filename, PyObject *name, int firstlineno,
              PyObject *lnotab);
 
-    filename => $ebp + 0x30
-    name => $ebp + 0x34
+             filename => $ebp + 0x30
+             name => $ebp + 0x34
 
-  (gdb) break PyCode_New
-    commands
-      silent
-      p (char*)PyString_AsString({PyObject*}($ebp+0x30))
-      p (char*)PyString_AsString({PyObject*}($ebp+0x34))
-      p (int)({int*}($ebp+0x38))
-      # call pyddd_ipa_new_code_object_hook(
-      #             {PyObject*}($ebp+0x30),
-      #             {PyObject*}($ebp+0x34),
-      #             (int)({int*}($ebp+0x38)),
-      #             {PyObject*}($ebp+0x3c)
-      #             )
-      continue
-    end
-
+            (gdb) break PyCode_New
+              commands
+                silent
+                p (char*)PyString_AsString({PyObject*}($ebp+0x30))
+                p (char*)PyString_AsString({PyObject*}($ebp+0x34))
+                p (int)({int*}($ebp+0x38))
+                # call pyddd_ipa_new_code_object_hook(
+                #             {PyObject*}($ebp+0x30),
+                #             {PyObject*}($ebp+0x34),
+                #             (int)({int*}($ebp+0x38)),
+                #             {PyObject*}($ebp+0x3c)
+                #             )
+                continue
+              end
+        
 * How to start at the begin of running script:
 
   Add a temporary catch, as the following command:
