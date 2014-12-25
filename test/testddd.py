@@ -23,6 +23,8 @@ import threading
 import time
 
 PROMPT = '(gdb) '
+DOCPREFIX = '>>> pyddd.command("'
+
 args = './gdb.exe', '--data-directory=./', '--quiet', '-nx'
 
 class PyDDD(object):
@@ -74,7 +76,7 @@ def make_test_file(src):
         with open(src, 'r') as fs:
             for line in fs.readlines():
                 if line.strip().startswith(PROMPT):
-                    ft.write(line[:-1].replace(PROMPT, '>>> pyddd.command("'))
+                    ft.write(line[:-1].replace(PROMPT, DOCPREFIX))
                     ft.write('")\n')
                 else:
                     ft.write(line)
@@ -88,6 +90,10 @@ if __name__ == "__main__":
     filename = '../rationale.rst'
     if os.path.exists(filename):
         tmpfile = make_test_file(filename)
-        doctest.testfile(tmpfile, globs=globals())
+        doctest.testfile(
+            tmpfile,
+            globs=globals(),
+            optionflags=doctest.ELLIPSIS,
+            )
         os.remove(tmpfile)
     pyddd.stop()
