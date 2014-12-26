@@ -49,10 +49,11 @@ class PyDDD(object):
 
     def command(self, line):
         self._gdb.stdin.write(('%s\n' % line).encode())
+        time.sleep(.5)
         self.read_stdout()
 
     def read_stdout(self):
-        while select.select(self.sockets, [], [], 0.5)[0]:
+        while select.select(self.sockets, [], [], .5)[0]:
             buf = self.sockets[1].recv(PyDDD.BUFSIZE)
             if buf.endswith(PROMPT):
                 sys.stdout.write (buf[:-1])
@@ -93,7 +94,7 @@ if __name__ == "__main__":
         doctest.testfile(
             tmpfile,
             globs=globals(),
-            optionflags=doctest.ELLIPSIS,
+            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
             )
         os.remove(tmpfile)
     pyddd.stop()
