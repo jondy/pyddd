@@ -14,6 +14,27 @@ variable of PyObject* will show the value of both c pointer and python
 type (a list or dict etc.). And frame will show both c frame and
 python frame.
 
+Before debugging, start GDB.
+
+.. code-block:: bash
+
+  $ cd /opt/pyddd
+  $ gdb
+  (gdb) source init.gdb
+  (gdb) exec-file python
+
+.. note::
+
+  For Windows user, even GDB is running in the cygwin, you can also
+  debug python scripts with native windows python by GDB :command:
+  `exec-file`
+
+  .. code-block:: bat
+  
+    (gdb) exec-file C:/Python26/python.exe
+
+After that, see below chapters to debug your python scripts.
+
 Start Python Script
 ===================
 

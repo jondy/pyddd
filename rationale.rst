@@ -198,16 +198,7 @@ When GDB stop at "PyCode_New", as the same way, "name" and
 Implementation
 ==============
 
-see ipa.c, init.gdb and libddd.py
-
-Related Links
-=============
-
-**PYDDD**, a super-gdb command line tool, implemented as described
-  above. Published by GNU License.
-
-**PYCASTLE**, a commercial python ide, implemented a gui debugger for
-  Python scripts.
+See ipa.c, init.gdb and libddd.py
 
 Example
 =======
