@@ -7,9 +7,6 @@ same way to debug c program line by line in the same inferior.
 Download
 ========
 
-Since Pyddd is written in the Python language, you need to install
-Python (the required version is at least 2.6).
-
 You can also download a snapshot from the Git repository:
 
 * as a `.tar.gz <https://github.com/jondy/pyddd/archive/master.tar.gz>`__
@@ -19,11 +16,15 @@ You can also download a snapshot from the Git repository:
 Installation
 ============
 
+Since Pyddd is written in the Python language, you need to install
+Python (the required version is at least 2.6).
+
 Linux
 -----
 
-* First, you need build GDB with Python.
-* Then, unzip Pyddd package, build pyddd-ipa.
+* Rebuild GDB with Python and reinstall it.
+* Extract Pyddd package.
+* Build pyddd-ipa.
 
 .. code-block:: bash
 
@@ -33,9 +34,10 @@ Linux
 Windows
 -------
 
-* First, you need install Cygwin.
-* Next, build GDB with Python in Cygwin.
-* Then, unzip Pyddd package, open Cygwin Terminal, build pyddd-ipa.
+* Install Cygwin.
+* Rebuild GDB with Python in Cygwin and reinstall it.
+* Unzip Pyddd package.
+* Open Cygwin Terminal, build pyddd-ipa.
 
 .. code-block:: bash
 
@@ -46,7 +48,7 @@ Quick Start
 ===========
 
 After installation, invoke the command prompt, go to the directory
-with Pyddd installed and run those commands:
+in which Pyddd installed and run those commands:
 
 .. code-block:: bash
 
