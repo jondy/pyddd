@@ -1774,4 +1774,5 @@ gdb.events.exited.connect (
     lambda e : _imported_script_symbol_table.clear()
     )
 
+gdb.execute('set $pyddd_ipa_linux_platform = %d' % sys.platform.startswith('linux'))
 # End of libddd.py

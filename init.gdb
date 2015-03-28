@@ -5,7 +5,11 @@ dont-repeat
 
 define python-ipa-initialize
   dont-repeat
-  set $python_ipa_handle = LoadLibraryA("pyddd-ipa.dll")
+  if $pyddd_ipa_linux_platform
+      set $python_ipa_handle = dlopen("pyddd-ipa.so", 2)
+  else
+      set $python_ipa_handle = LoadLibraryA("pyddd-ipa.dll")
+  end
   set $python_ipa_trace_flag = PyEval_SetTrace(pyddd_ipa_trace_trampoline, 0)
   set $python_major_version = *(char*)Py_GetVersion()
   if $python_major_version == 0x33
