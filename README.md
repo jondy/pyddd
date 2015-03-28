@@ -28,8 +28,8 @@ Linux
 
 .. code-block:: bash
 
-   $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
-   python-ipa.so ipa.c
+  $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
+  python-ipa.so ipa.c
 
 Windows
 -------
@@ -41,14 +41,14 @@ Windows
 
 .. code-block:: bash
 
-   $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
-   python-ipa.dll ipa.c
+  $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
+  python-ipa.dll ipa.c
 
 Quick Start
 ===========
 
 After installation, invoke the command prompt, go to the directory
-in which Pyddd installed and run those commands:
+in which Pyddd installed and run those commands.
 
 .. code-block:: bash
 
