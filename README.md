@@ -11,7 +11,7 @@ You can also download a snapshot from the Git repository:
 
 * as a `.tar.gz <https://github.com/jondy/pyddd/archive/master.tar.gz>`__
   file or
-* as a `.zip <https://github.com/jondy/pyddd/archive/master.zip>`_ file
+* as a `.zip <https://github.com/jondy/pyddd/archive/master.zip>`__ file
 
 Installation
 ============
@@ -29,7 +29,7 @@ Linux
 .. code-block:: bash
 
   $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
-  python-ipa.so ipa.c
+    python-ipa.so ipa.c
 
 Windows
 -------
@@ -42,13 +42,13 @@ Windows
 .. code-block:: bash
 
   $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
-  python-ipa.dll ipa.c
+    python-ipa.dll ipa.c
 
 Quick Start
 ===========
 
 After installation, invoke the command prompt, go to the directory
-in which Pyddd installed and run those commands.
+in which Pyddd installed and run those commands:
 
 .. code-block:: bash
 
