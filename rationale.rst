@@ -102,7 +102,7 @@ Show catchpoints::
 
   - (gdb) py-catch info [ranges...]
 
-* Continuing and Stepping
+* Continuing and Stepping::
 
   - (gdb) py-continue [ignore-count]
   - (gdb) py-step [count]
@@ -131,6 +131,8 @@ Show catchpoints::
   - (gdb) py-up [n]
   - (gdb) py-down [n]
   - (gdb) py-select-frame framespec
+
+* Examining Python backtrace::
 
   - (gdb) py-bt
   - (gdb) py-bt n
