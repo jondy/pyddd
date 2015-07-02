@@ -5,7 +5,7 @@ import os
 from distutils.core import setup, Extension
 
 def get_description():
-    filename = os.path.abspath(os.path.join(os.path.dirname(__file__), 'README.md'))
+    filename = os.path.abspath(os.path.join(os.path.dirname(__file__), 'README.rst'))
     f = open(filename, 'r')
     try:
         return f.read()
