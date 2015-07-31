@@ -2,16 +2,17 @@
 
 all: test/pyddd-ipa.so test/test-ipa
 
-PYTHONINC := /usr/lib/include/python27
-PYTHONLIB := -L/usr/lib -lpython27
-CFLAGS := -g -I$(PYTHONINC)
+PYTHONROOT := /home/jondy/workspace/pytransform/python/usr/local
+PYTHONINC := $(PYTHONROOT)/include/python2.7
+PYTHONLIB := -L$(PYTHONROOT)/lib -lpython2.7
+CFLAGS := -g -I$(PYTHONINC) -fPIC
 CC := gcc
 
-test/pyddd-ipa: ipa.c
+test/pyddd-ipa.so: ipa.c
 	$(CC) -shared $(CFLAGS) $< -Wl,-lpthread -o $@
 
 test/test-ipa: test/test-ipa.c ipa.c
-	$(CC) -mconsole -o $@ $(CFLAGS) -DTEST_IPA $< ipa.c $(PYTHONLIB) -Wl,-lpthread
+	$(CC) -o $@ $(CFLAGS) -DTEST_IPA $< ipa.c $(PYTHONLIB) -Wl,-lpthread
 
 test: test/test-ipa
 	test/test-ipa
