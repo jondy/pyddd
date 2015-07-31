@@ -1,0 +1,17 @@
+.PHONY: all
+
+all: test/pyddd-ipa.so test/test-ipa
+
+PYTHONINC := /usr/lib/include/python27
+PYTHONLIB := -L/usr/lib -lpython27
+CFLAGS := -g -I$(PYTHONINC)
+CC := gcc
+
+test/pyddd-ipa: ipa.c
+	$(CC) -shared $(CFLAGS) $< -Wl,-lpthread -o $@
+
+test/test-ipa: test/test-ipa.c ipa.c
+	$(CC) -mconsole -o $@ $(CFLAGS) -DTEST_IPA $< ipa.c $(PYTHONLIB) -Wl,-lpthread
+
+test: test/test-ipa
+	test/test-ipa
