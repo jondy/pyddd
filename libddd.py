@@ -768,6 +768,27 @@ class PythonRunCommand(gdb.Command):
         gdb.execute('py-symbol-file disable autoload')
         gdb.execute('run')
 
+class PythonExecArgsCommand(gdb.Command):
+    '''
+    Set arguments to be passed to python, not to python scripts.
+
+    Usage: py-exec-args [option] ...
+
+    Same as options of python command line.
+
+    '''
+    def __init__(self):
+        gdb.Command.__init__ (self,
+                              'py-exec-args',
+                              gdb.COMMAND_NONE,
+                              gdb.COMPLETE_NONE,
+                              )
+
+    def invoke(self, args, from_tty):
+        global _python_exec_arguments
+        self.dont_repeat()
+        _python_exec_arguments = args
+
 class PythonCatchpointCommand(gdb.Command):
     '''
     Create python script catchpoints.
@@ -1757,6 +1778,7 @@ PythonInternalVolatileBreakpoint()
 PythonIPALoadDataCommand()
 PythonIPAFrameCommand()
 PythonFileCommand()
+PythonExecArgsCommand()
 PythonSymbolFileCommand()
 PythonRunCommand()
 PythonBreakpointCommand()
