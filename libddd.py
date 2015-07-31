@@ -731,7 +731,7 @@ class PythonRunCommand(gdb.Command):
 
     Usage: py-run
     Wrap gdb command 'run', set args to call python, for example,
-      (gdb) exec-file python
+      (gdb) py-exec-file python
       (gdb) py-file main.py
       (gdb) py-args --help
       (gdb) py-exec-args -i

@@ -49,6 +49,15 @@ define python-ipa-initialize
   python-ipa-frame teardown
 end
 
+def py-exec-file
+  dont-repeat
+  if $argc == 0
+    file
+  else
+    file $arg0
+  end
+end
+
 def py-start
   dont-repeat
   py-tcatch call <module>

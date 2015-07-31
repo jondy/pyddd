@@ -18,7 +18,7 @@ Proposal
 
 * Start to debug Python script::
 
-  - (gdb) file /usr/local/bin/python2.7
+  - (gdb) py-exec-file /usr/local/bin/python2.7
   - (gdb) py-file beer.py
   - (gdb) py-args 10
   - (gdb) py-start
@@ -224,7 +224,7 @@ This example is doc-tested, run the following command to test it::
 
 * Specify which python is used::
 
-    (gdb) file python
+    (gdb) py-exec-file python
     Reading symbols from ...python...(no debugging symbols found)...done.
     (gdb)
 
