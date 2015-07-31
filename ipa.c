@@ -44,7 +44,7 @@ static const char *PYDDD_IPA_VERSION = "0.1.2";
 
 static char* find_name_in_list(const char *name, const char *namelist);
 static void pyddd_ipa_set_volatile_breakpoint(const int enabled,
-                                              const int thread_id,
+                                              const long thread_id,
                                               PyFrameObject *f_frame,
                                               PyObject* co_filename,
                                               const int lineno);
@@ -447,7 +447,7 @@ pyddd_ipa_remove_breakpoint(const int rindex)
 
 static void
 pyddd_ipa_set_volatile_breakpoint(const int enabled,
-                                  const int thread_id,
+                                  const long thread_id,
                                   PyFrameObject *f_frame,
                                   PyObject* co_filename,
                                   const int lineno)
