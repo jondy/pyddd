@@ -72,7 +72,7 @@ in which Pyddd installed and run those commands:
 
   $ gdb
   (gdb) source init.gdb
-  (gdb) exec-file python
+  (gdb) file python
   (gdb) py-file foo.py
   (gdb) py-start
 

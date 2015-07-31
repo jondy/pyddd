@@ -21,17 +21,17 @@ Before debugging, start GDB.
   $ cd /opt/pyddd
   $ gdb
   (gdb) source init.gdb
-  (gdb) exec-file python
+  (gdb) file python
 
 .. note::
 
   For Windows user, even GDB is running in the cygwin, you can also
   debug python scripts with native windows python by GDB :command:
-  `exec-file`
+  `file`
 
   .. code-block:: bat
   
-    (gdb) exec-file C:/Python26/python.exe
+    (gdb) file C:/Python26/python.exe
 
 After that, see below chapters to debug your python scripts.
 
@@ -57,11 +57,11 @@ Set arguments of python scripts.
 * py-run
 
 Use the py-run command to run your python script. You must first
-specify python program by command exec-file.
+specify python program by command file.
 
 Here is an example::
 
-  (gdb) exec-file C:/Python27/python.exe
+  (gdb) file C:/Python27/python.exe
   (gdb) py-exec-args -i
   (gdb) py-script foo.py
   (gdb) py-args -k
@@ -496,7 +496,7 @@ beer.py queens.py life.py
 
 (gdb) source init.gdb
 
-(gdb) exec-file python
+(gdb) file python
 (gdb) py-file beer.py
 (gdb) py-start
 
