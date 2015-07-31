@@ -23,6 +23,15 @@ Linux
 -----
 
 * Rebuild GDB with Python and reinstall it.
+
+.. code-block:: bash
+
+  $ tar xzf gdb-7.8.1.tar.gz
+  $ cd gdb-7.8.1
+  $ ./configure --with-python=python --with-babeltrace=no \
+    --enable-tui=no --enable-host-shared
+  $ make
+
 * Extract Pyddd package.
 * Build pyddd-ipa.
 
@@ -36,6 +45,15 @@ Windows
 
 * Install Cygwin.
 * Rebuild GDB with Python in Cygwin and reinstall it.
+
+.. code-block:: bash
+
+  $ tar xzf gdb-7.8.1.tar.gz
+  $ cd gdb-7.8.1
+  $ ./configure --with-python=python --with-babeltrace=no \
+    --enable-tui=no --enable-host-shared
+  $ make
+
 * Unzip Pyddd package.
 * Open Cygwin Terminal, build pyddd-ipa.
 
