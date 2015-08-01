@@ -12,7 +12,7 @@ def get_description():
     finally:
         f.close()
 
-VERSION = '0.1.3'
+VERSION = '0.2.1'
 
 def main():
     setup_args = dict(
