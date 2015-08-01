@@ -30,15 +30,21 @@ Linux
   $ cd gdb-7.8.1
   $ ./configure --with-python=python --with-babeltrace=no \
     --enable-tui=no --enable-host-shared
-  $ make
+  $ make && make install
 
-* Extract Pyddd package.
+* Extract Pyddd package, copy libddd.py to gdb data directory.
+
+.. code-block:: bash
+
+  $ cp libddd.py /usr/local/share/gdb/python
+
 * Build pyddd-ipa.
 
 .. code-block:: bash
 
   $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
     python-ipa.so ipa.c
+  $ cp python-ipa.so /usr/local/lib
 
 Windows
 -------
@@ -52,29 +58,35 @@ Windows
   $ cd gdb-7.8.1
   $ ./configure --with-python=python --with-babeltrace=no \
     --enable-tui=no --enable-host-shared
-  $ make
+  $ make && make install
 
-* Unzip Pyddd package.
+* Unzip Pyddd package, copy libddd.py to gdb data directory.
+
+.. code-block:: bash
+
+  $ cp libddd.py /usr/local/share/gdb/python
+
 * Open Cygwin Terminal, build pyddd-ipa.
 
 .. code-block:: bash
 
   $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
     python-ipa.dll ipa.c
+  $ cp python-ipa.dll /usr/local/lib
 
 Quick Start
 ===========
 
 After installation, invoke the command prompt, go to the directory
-in which Pyddd installed and run those commands:
+including the debugged script foo.py and run those commands (assume
+pyddd is extracted at /usr/local/pyddd):
 
 .. code-block:: bash
 
-  $ gdb
-  (gdb) source init.gdb
+  $ gdb -x /usr/local/pyddd/init.gdb
   (gdb) py-exec-file python
   (gdb) py-file foo.py
   (gdb) py-start
 
-For more, see pyddd.rst and rationale.rst
+For more, see `pyddd.rst`__ and `rationale.rst`__
 
