@@ -63,7 +63,7 @@ Here is an example::
 
   (gdb) py-exec-file C:/Python27/python.exe
   (gdb) py-exec-args -i
-  (gdb) py-script foo.py
+  (gdb) py-file foo.py
   (gdb) py-args -k
   (gdb) py-run
 
