@@ -42,7 +42,7 @@ Linux
 
 .. code-block:: bash
 
-  $ gcc -g -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
+  $ gcc -g -fPIC -I/usr/include/python2.7 -Wl,-lpthread -shared -o \
     python-ipa.so ipa.c
   $ cp python-ipa.so /usr/local/lib
 
@@ -88,5 +88,5 @@ pyddd is extracted at /usr/local/pyddd):
   (gdb) py-file foo.py
   (gdb) py-start
 
-For more, see `pyddd.rst`__ and `rationale.rst`__
+For more, see pyddd.rst and rationale.rst.
 
