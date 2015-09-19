@@ -7,8 +7,8 @@ same way to debug c program line by line in the same inferior.
 Purpose
 =======
 
-Debug Python scripts and C/C++ extensions within GDB, and debug
-scripts line by line same as C/C++.
+Debug Python scripts line by line same as debug C/C++ in GDB, so that
+we can easily debug Python scripts and C/C++ extensions within GDB.
 
 Causation
 =========
