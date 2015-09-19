@@ -12,7 +12,7 @@ def get_description():
     finally:
         f.close()
 
-VERSION = '0.2.2'
+VERSION = '0.2.3'
 
 def main():
     setup_args = dict(
@@ -30,7 +30,7 @@ def main():
         author_email='jondy.zhao@gmail.com',
         maintainer='Jondy Zhao',
         maintainer_email='jondy.zhao@gmail.com',
-        url='https://github.com/jondy/pyddd',
+        url='https://jondy.github.io/pyddd',
         platforms=['Windows', 'Linux'],
         license='GPLv3',
         )
