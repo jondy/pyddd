@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Pyddd : Line by Line Debug Python Scripts In GDB">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Pyddd</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jondy/pyddd">View on GitHub</a>
+
+          <h1 id="project_title">Pyddd</h1>
+          <h2 id="project_tagline">Line by Line Debug Python Scripts In GDB</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jondy/pyddd/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jondy/pyddd/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Pyddd is a super-GDB debugger which could debug python scripts as the same way to debug c program line by line in the same inferior.</p>
+
+<h1>
+<a id="purpose" class="anchor" href="#purpose" aria-hidden="true"><span class="octicon octicon-link"></span></a>Purpose</h1>
+
+<p>Write a debuger which can debug Python scripts line by line same as C/C++. So that we can easily debug Python scripts and C/C++ extensions within GDB.</p>
+
+<h1>
+<a id="causation" class="anchor" href="#causation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Causation</h1>
+
+<p>I always uses Python plus C/C++ to develop my most of applications. Generally, use GDB to debug python C/C++ extensions, and insert extra print statements in Python scripts. There is a gdb extension "libpython.py" within Python sources, it could print Python frame, locals/globals variable, Python sources in GDB. But it couldn't
+set breakpoints in Python scripts directly. Finally, I decided to write a debugger to extend GDB could debug Python scripts line by line, just like debugging c/c++.</p>
+
+<h1>
+<a id="proposal" class="anchor" href="#proposal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Proposal</h1>
+
+<p>Start to debug Python script:</p>
+
+<pre><code>  (gdb) py-exec-file /usr/local/bin/python2.7
+  (gdb) py-file beer.py
+  (gdb) py-args 10
+  (gdb) py-start
+</code></pre>
+
+<p>GDB will stop at the first code line of beer.py. If use <code>py-run</code> instead <code>py-start</code>:</p>
+
+<pre><code>  (gdb) py-run
+</code></pre>
+
+<p>GDB will not stop at the begging of beer.py, until hit some breakpoint.</p>
+
+<p>Set Python arguments, for example, unbuffered binary stdout and stderr:</p>
+
+<pre><code>  (gdb) py-exec-args -u
+</code></pre>
+
+<p>Set breakpoints in Python script:</p>
+
+<pre><code>  (gdb) py-break 10
+  (gdb) py-break beer.py:10
+  (gdb) py-break bottle
+  (gdb) py-break beer.py:bottle
+  (gdb) py-break bottle:+3
+  (gdb) py-break bottle:-3
+</code></pre>
+
+<p>Set condition of breakpoints:</p>
+
+<pre><code>  (gdb) py-break location if condition
+  (gdb) py-condition bnum condition
+</code></pre>
+
+<p>condition may be any valid Python expression. It will not stop if symbol in condition isn't available in the current context.</p>
+
+<p>Set temporary breakpoints, arguments are same with <code>py-break</code>:</p>
+
+<pre><code>  (gdb) py-tbreak ...
+</code></pre>
+
+<p>Delete breakpoints:</p>
+
+<pre><code>  (gdb) py-clear
+  (gdb) py-clear location
+  (gdb) py-delete [breakpoints] [range...]
+</code></pre>
+
+<p>Disable breakpoints:</p>
+
+<pre><code>  (gdb) py-disable [breakpoints] [range...]
+  (gdb) py-enable [breakpoints] [range...]
+  (gdb) py-enable [breakpoints] once range...
+  (gdb) py-enable [breakpoints] count count range...
+  (gdb) py-enable [breakpoints] delete range...
+</code></pre>
+
+<p>Breakpoint Command Lists:</p>
+
+<pre><code>  (gdb) py-commands [range...]
+          ... command-list ...
+          end
+</code></pre>
+
+<p>Show breakpoints:</p>
+
+<pre><code>  (gdb) py-info [breakpoints] [range...]
+
+</code></pre>
+
+<p>Catch exception and function call:</p>
+
+<pre><code>  (gdb) py-catch exception name
+  (gdb) py-catch call name
+</code></pre>
+
+<p>GDB will stop when exception name is raised or function name is called.</p>
+
+<p>Add temporary catchpoint:</p>
+
+<pre><code>  (gdb) py-tcatch exception name
+  (gdb) py-tcatch call name
+</code></pre>
+
+<p>Clear catchpoints:</p>
+
+<pre><code>  (gdb) py-catch clear name
+</code></pre>
+
+<p>Show catchpoints:</p>
+
+<pre><code>  (gdb) py-catch info [ranges...]
+</code></pre>
+
+<p>Continuing and Stepping:</p>
+
+<pre><code>  (gdb) py-continue [ignore-count]
+  (gdb) py-step [count]
+  (gdb) py-next [count]
+  (gdb) py-finish
+  (gdb) py-until
+  (gdb) py-until location
+  (gdb) py-advance location
+</code></pre>
+
+<p>Examining Python Scripts:</p>
+
+<pre><code>  (gdb) py-list linenum
+  (gdb) py-list function
+  (gdb) py-list
+  (gdb) py-list -
+  (gdb) py-list +
+  (gdb) py-list first,last
+  (gdb) py-list first,
+  (gdb) py-list ,last
+</code></pre>
+
+<p>Examining Python frame stack:</p>
+
+<pre><code>  (gdb) py-frame
+  (gdb) py-frame n
+  (gdb) py-frame function
+  (gdb) py-up [n]
+  (gdb) py-down [n]
+  (gdb) py-select-frame framespec
+</code></pre>
+
+<p>Examining Python backtrace:</p>
+
+<pre><code>  (gdb) py-bt
+  (gdb) py-bt n
+  (gdb) py-bt -n
+  (gdb) py-bt full
+  (gdb) py-bt full n
+  (gdb) py-bt full -n
+</code></pre>
+
+<p>Examining Python Data:</p>
+
+<pre><code>  (gdb) py-print expr
+  (gdb) py-locals
+  (gdb) py-locals varname
+  (gdb) py-globals
+  (gdb) py-globals varname
+</code></pre>
+
+<p>Altering Python local/global variable:</p>
+
+<pre><code>  (gdb) py-set-var name expression
+  (gdb) py-set-var /global name expression
+</code></pre>
+
+<h1>
+<a id="workaround" class="anchor" href="#workaround" aria-hidden="true"><span class="octicon octicon-link"></span></a>Workaround</h1>
+
+<p>Fortunately, Python has its line-trace mechanism, see "PySys_SetTrace" in "Python/sysmodule.c" and "PyEval_SetTrace" in "Python/ceval.c". In order to stop Python Scripts in GDB, we need write a trace function in c or c++, install the trace function when run python scripts. In trace function check all the <em>Python Breakpoints</em>, and execute a statement which include a GDB <em>Breakpoint</em>. Here is the basic scenario:</p>
+
+<ul>
+<li>Write our own trace function in C, and build it as a shared library.</li>
+<li>Manage <em>Python Breakpoints</em> in this library.</li>
+<li>In GDB, load this library and install trace function after start
+to debug python scripts.</li>
+<li>In GDB, set a <em>Breakpoint</em> in trace function. It will execute the
+statement in this <em>Breakpoint</em> if any <em>Python Breakpoint</em> is
+hit. By this way, a <em>Python Breakpint</em> is transferred a standard
+GDB <em>Breakpoint</em>.</li>
+</ul>
+
+<p>In order to get the lineno of each imported class/function in runtime, The two GDB <em>Breakpoints</em> at "PyImport_ExecCodeModuleEx" and "PyCode_New" are set.</p>
+
+<p>Here is prototype of "PyImport_ExecCodeModuleEx":</p>
+
+<blockquote>
+<p>PyObject* PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname);</p>
+</blockquote>
+
+<p>When GDB stop at "PyImport_ExecCodeModuleEx", "name" and "pathname" could be got from the current frame:</p>
+
+<pre><code>  set $name = (char*)($fp + sizeof($fp) + sizeof($pc))
+  set $pathname = (char*)($fp + sizeof($fp) + sizeof($pc) + sizeof(char*) + sizeof(PyObject*)
+</code></pre>
+
+<p>For the concerned module, enable <em>Breakpoint</em> "PyCode_New"; Otherwise disable. Because there are many python scripts are imported, only a few are required to debug.</p>
+
+<p>When GDB stop at "PyCode_New", as the same way, "name" and "firstlineno" could be got from current frame. When name equals "", it means last code object in this module, disable this <em>Breakpoint</em> self.</p>
+
+<h1>
+<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h1>
+
+<p>See ipa.c, init.gdb and libddd.py</p>
+
+<h1>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h1>
+
+<p>This example is doc-tested, run the following command to test it:</p>
+
+<pre><code>  $ python testddd.py -v
+</code></pre>
+
+<p>Load init.gdb of <em>PYDDD</em>:</p>
+
+<pre><code>    (gdb) source init.gdb
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    No symbol table is loaded.  Use the "file" command.
+    (gdb)
+</code></pre>
+
+<p>Specify which python is used:</p>
+
+<pre><code>    (gdb) py-exec-file python
+    Reading symbols from ...python...(no debugging symbols found)...done.
+    (gdb)
+</code></pre>
+
+<p>Specify main script:</p>
+
+<pre><code>    (gdb) py-file beer.py
+    main script is beer.py
+    (gdb)
+</code></pre>
+
+<p>Start debug:</p>
+
+<pre><code>    (gdb) py-start
+    Add temporary catchpoint #1, catch call:&lt;module&gt;
+    load symbols from main script
+    Disabled autoload imported symbol
+    [New Thread ...]
+    [New Thread ...]
+    Enabled autoload imported symbol
+    Catch function call: &lt;module&gt;
+    #0 &lt;module&gt; ( ) at beer.py:5
+      &gt;5    import sys
+    Remove temporary catchpoint #1
+    (gdb)
+</code></pre>
+
+<p>Show sources:</p>
+
+<pre><code>    (gdb) py-list
+      &gt;5    import sys
+       6
+       7    n = 10
+       8    if sys.argv[1:]:
+       9        n = int(sys.argv[1])
+      10
+      11    def bottle(n):
+      12        if n == 0: return "no more bottles of beer"
+      13        if n == 1: return "one bottle of beer"
+      14        return str(n) + " bottles of beer"
+      15
+    (gdb)
+</code></pre>
+
+<p>Continue script:</p>
+
+<pre><code>    (gdb) py-continue
+    Continuing.
+    ...
+    (gdb)
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Pyddd maintained by <a href="https://github.com/jondy">jondy</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
