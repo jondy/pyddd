@@ -1,18 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#############################################################
-#                                                           #
-#      Copyright @ 2014, 2015 Dashingsoft corp.             #
-#      All rights reserved.                                 #
-#                                                           #
-#      pyddd                                                #
-#                                                           #
-#      Version: 0.1.2                                       #
-#                                                           #
-#############################################################
-#
-#
 #  @File: libddd.py
 #
 #  @Author: Jondy Zhao(jondy.zhao@gmail.com)

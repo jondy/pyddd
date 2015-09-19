@@ -1,14 +1,3 @@
-/*************************************************************************
- #                                                                       #
- #              Copyright @ 2014, 2015 Dashingsoft corp.                 #
- #              All rights reserved.                                     #
- #                                                                       #
- #              pyddd                                                    #
- #                                                                       #
- #              Version: 0.1.2                                           #
- #                                                                       #
- *************************************************************************/
-
 /*
  * Version number will finally following golden mean 1.6180339...
  *
