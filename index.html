@@ -12,7 +12,7 @@
 #donate_link {
   display: block;
   position: absolute;
-  top:0;
+  top:100;
   right: 10px;
   z-index: 10;
   padding: 10px 50px 10px 10px;
@@ -34,8 +34,8 @@
     <div id="header_wrap" class="outer">
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/jondy/pyddd">View on GitHub</a>
+          <a id="donate_link" href="#" onclick="donate_form.submit()">Donate</a>
 <form id="donate_form" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-
     <!-- Identify your business so that you can collect the payments. -->
     <input type="hidden" name="business" value="zhaojunde1976@gmail.com">
 
@@ -55,8 +55,6 @@
     <img alt="" border="0" width="1" height="1"
     src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
     -->
-	<a id="donate_link" href="#" onclick="donate_form.submit()">Donate</a>
-	
 </form>
           <h1 id="project_title">Pyddd</h1>
           <h2 id="project_tagline">Line by Line Debug Python Scripts In GDB</h2>
