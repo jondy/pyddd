@@ -16,8 +16,29 @@
       <a href="https://github.com/jondy/pyddd" class="btn">View on GitHub</a>
       <a href="https://github.com/jondy/pyddd/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/jondy/pyddd/tarball/master" class="btn">Download .tar.gz</a>
+      <a id="donate_link" href="#" onclick="donate_form.submit()" class="btn">Donate</a>
     </section>
+<form id="donate_form" action="https://www.paypal.com/cgi-bin/webscr" method="post" style="display:none">
+    <!-- Identify your business so that you can collect the payments. -->
+    <input type="hidden" name="business" value="zhaojunde1976@gmail.com">
 
+    <!-- Specify a Donate button. -->
+    <input type="hidden" name="cmd" value="_donations">
+
+    <!-- Specify details about the contribution -->
+    <input type="hidden" name="item_name" value="PYDDD Project">
+    <input type="hidden" name="currency_code" value="USD">
+    <input type="hidden" name="no_shipping" value="1">
+    <input type="hidden" name="tax" value="0">
+
+    <!-- Display the payment button. 
+    <input type="image" name="submit" border="0"
+    src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
+    alt="PayPal - The safer, easier way to pay online">
+    <img alt="" border="0" width="1" height="1"
+    src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
+    -->
+</form>
     <section class="main-content">
       <p>Pyddd is a super-GDB debugger which could debug python scripts as the same way to debug c program line by line in the same inferior.</p>
 
