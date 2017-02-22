@@ -520,7 +520,7 @@ called, no object entry is created.
 Appendix
 ========
 
-* How to find address of "trace_trampoline" from python library in gdb ::
+How to find address of "trace_trampoline" from python library in gdb ::
 
   - (gdb) exec C:/Python27/python.exe
   - (gdb) set args -i
@@ -575,6 +575,7 @@ Appendix
   $ ./configure --with-python=python --with-babeltrace=no --enable-tui=no --enable-host-shared
   $ make
   $ i686-pc-mingw32-gcc -shared  -g -I/cygdrive/c/Python27/include -Wl,-lpthread -o pyddd-ipa.dll ipa.c
+
 
 * Print PyCodeObject created by PyCode_New ::
 
