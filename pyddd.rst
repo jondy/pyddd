@@ -30,7 +30,7 @@ Before debugging, start GDB.
   `file`
 
   .. code-block:: bat
-  
+
     (gdb) py-exec-file C:/Python26/python.exe
 
 After that, see below chapters to debug your python scripts.
@@ -520,94 +520,95 @@ called, no object entry is created.
 Appendix
 ========
 
-* How to find address of "trace_trampoline" from python library in gdb
+* How to find address of "trace_trampoline" from python library in gdb ::
 
-$ gdb
-(gdb) exec C:/Python27/python.exe
-(gdb) set args -i
-(gdb) b PyEval_EvalFrameEx
-No symbol table is loaded.  Use the "file" command.
-Make breakpoint pending on future shared library load? (y or [n]) y
+  - (gdb) exec C:/Python27/python.exe
+  - (gdb) set args -i
+  - (gdb) b PyEval_EvalFrameEx
+    No symbol table is loaded.  Use the "file" command.
+    Make breakpoint pending on future shared library load? (y or [n]) y
+    Breakpoint 1 (PyEval_EvalFrameEx) pending.
+  - (gdb) run
+    Starting program: /cygdrive/c/Python27/python.exe -i
+    [New Thread 4084.0xcc8]
+    Breakpoint 1, 0x1e00f363 in python27!PyEval_EvalFrameEx ()
+    from /cygdrive/c/WINDOWS/system32/python27.dll
+  - (gdb) call PyCFunction_GetFunction(PyDict_GetItemString(PyModule_GetDict(PyImport_AddModule("sys")), "settrace"))
+    $1 = 503847580
+  - (gdb) p /x $1
+    $2 = 0x1e081a9c
+  - (gdb) x /15i $2
+     0x1e081a9c <python27!PyFloat_AsString+204>:
+      call   0x1e067c6c <python27!PyThread_start_new_thread+180>
+     0x1e081aa1 <python27!PyFloat_AsString+209>:  cmp    $0xffffffff,%eax
+     0x1e081aa4 <python27!PyFloat_AsString+212>:
+      jne    0x1e081aa9 <python27!PyFloat_AsString+217>
+     0x1e081aa6 <python27!PyFloat_AsString+214>:  xor    %eax,%eax
+     0x1e081aa8 <python27!PyFloat_AsString+216>:  ret
+     0x1e081aa9 <python27!PyFloat_AsString+217>:  push   %esi
+     0x1e081aaa <python27!PyFloat_AsString+218>:  mov    $0x1e1ed8c4,%esi
+     0x1e081aaf <python27!PyFloat_AsString+223>:  cmp    %esi,0xc(%esp)
+     0x1e081ab3 <python27!PyFloat_AsString+227>:
+      jne    0x1e081abb <python27!PyFloat_AsString+235>
+     0x1e081ab5 <python27!PyFloat_AsString+229>:  push   $0x0
+     0x1e081ab7 <python27!PyFloat_AsString+231>:  push   $0x0
+     0x1e081ab9 <python27!PyFloat_AsString+233>:
+      jmp    0x1e081ac4 <python27!PyFloat_AsString+244>
+     0x1e081abb <python27!PyFloat_AsString+235>:  pushl  0xc(%esp)
+     0x1e081abf <python27!PyFloat_AsString+239>:  push   $0x1e0d6dfe
+     0x1e081ac4 <python27!PyFloat_AsString+244>:
+      call   0x1e05a827 <python27!PyEval_SetTrace>
 
-Breakpoint 1 (PyEval_EvalFrameEx) pending.
-(gdb) run
-Starting program: /cygdrive/c/Python27/python.exe -i
-[New Thread 4084.0xcc8]
+  Before PyEval_SetTrace, push $0x1e0d6dfe, this is what I want
 
-Breakpoint 1, 0x1e00f363 in python27!PyEval_EvalFrameEx ()
-   from /cygdrive/c/WINDOWS/system32/python27.dll
-(gdb) call PyCFunction_GetFunction(PyDict_GetItemString(PyModule_GetDict(PyImport_AddModule("sys")), "settrace"))
-$1 = 503847580
-(gdb) p /x $1
-$2 = 0x1e081a9c
-(gdb) x /15i $2
-   0x1e081a9c <python27!PyFloat_AsString+204>:
-    call   0x1e067c6c <python27!PyThread_start_new_thread+180>
-   0x1e081aa1 <python27!PyFloat_AsString+209>:  cmp    $0xffffffff,%eax
-   0x1e081aa4 <python27!PyFloat_AsString+212>:
-    jne    0x1e081aa9 <python27!PyFloat_AsString+217>
-   0x1e081aa6 <python27!PyFloat_AsString+214>:  xor    %eax,%eax
-   0x1e081aa8 <python27!PyFloat_AsString+216>:  ret
-   0x1e081aa9 <python27!PyFloat_AsString+217>:  push   %esi
-   0x1e081aaa <python27!PyFloat_AsString+218>:  mov    $0x1e1ed8c4,%esi
-   0x1e081aaf <python27!PyFloat_AsString+223>:  cmp    %esi,0xc(%esp)
-   0x1e081ab3 <python27!PyFloat_AsString+227>:
-    jne    0x1e081abb <python27!PyFloat_AsString+235>
-   0x1e081ab5 <python27!PyFloat_AsString+229>:  push   $0x0
-   0x1e081ab7 <python27!PyFloat_AsString+231>:  push   $0x0
-   0x1e081ab9 <python27!PyFloat_AsString+233>:
-    jmp    0x1e081ac4 <python27!PyFloat_AsString+244>
-   0x1e081abb <python27!PyFloat_AsString+235>:  pushl  0xc(%esp)
-   0x1e081abf <python27!PyFloat_AsString+239>:  push   $0x1e0d6dfe
-   0x1e081ac4 <python27!PyFloat_AsString+244>:
-    call   0x1e05a827 <python27!PyEval_SetTrace>
-
-Before PyEval_SetTrace, push $0x1e0d6dfe, this is what I want.
-
-(gdb) b *0x1e0d6dfe
-(gdb) call PyEval_SetTrace(0x1e0d6dfe, 0)
+    - (gdb) b *0x1e0d6dfe
+    - (gdb) call PyEval_SetTrace(0x1e0d6dfe, 0)
 
 * Build gdb with python and python ipa ::
 
   $ tar xzf gdb-7.8.1.tar.gz
   $ cd gdb-7.8.1
 
-  # Hack gdb/configure, replace ncurses with ncursesw, after
-    configure, add -lncursesw in Makefile
+  Hack gdb/configure, replace ncurses with ncursesw, after configure,
+  add -lncursesw in Makefile ::
 
-  $ ./configure --with-python=python --with-babeltrace=no \
-    --enable-tui=no --enable-host-shared
+  $ ./configure --with-python=python --with-babeltrace=no --enable-tui=no --enable-host-shared
   $ make
-
-  $ i686-pc-mingw32-gcc -shared  -g -I/cygdrive/c/Python27/include \
-      ipa.c -Wl,-lpthread -o pyddd-ipa.dll
+  $ i686-pc-mingw32-gcc -shared  -g -I/cygdrive/c/Python27/include -Wl,-lpthread -o pyddd-ipa.dll ipa.c
 
 * Print PyCodeObject created by PyCode_New ::
 
-  PyCode_New(int argcount, int nlocals, int stacksize, int flags,
-             PyObject *code, PyObject *consts, PyObject *names,
-             PyObject *varnames, PyObject *freevars, PyObject *cellvars,
-             PyObject *filename, PyObject *name, int firstlineno,
-             PyObject *lnotab);
+  Prototype of PyCode_New ::
 
-             filename => $ebp + 0x30
-             name => $ebp + 0x34
+    PyCodeObject * PyCode_New(
+      int argcount, int nlocals, int stacksize, int flags,
+      PyObject *code, PyObject *consts, PyObject *names,
+      PyObject *varnames, PyObject *freevars, PyObject *cellvars,
+      PyObject *filename, PyObject *name, int firstlineno,
+      PyObject *lnotab);
 
-            (gdb) break PyCode_New
-              commands
-                silent
-                p (char*)PyString_AsString({PyObject*}($ebp+0x30))
-                p (char*)PyString_AsString({PyObject*}($ebp+0x34))
-                p (int)({int*}($ebp+0x38))
-                # call pyddd_ipa_new_code_object_hook(
-                #             {PyObject*}($ebp+0x30),
-                #             {PyObject*}($ebp+0x34),
-                #             (int)({int*}($ebp+0x38)),
-                #             {PyObject*}($ebp+0x3c)
-                #             )
-                continue
-              end
-        
+  So ::
+
+    filename => $ebp + 0x30
+    name => $ebp + 0x34
+
+  Then ::
+
+    (gdb) break PyCode_New
+    commands
+    silent
+    p (char*)PyString_AsString({PyObject*}($ebp+0x30))
+    p (char*)PyString_AsString({PyObject*}($ebp+0x34))
+    p (int)({int*}($ebp+0x38))
+    # call pyddd_ipa_new_code_object_hook(
+    #             {PyObject*}($ebp+0x30),
+    #             {PyObject*}($ebp+0x34),
+    #             (int)({int*}($ebp+0x38)),
+    #             {PyObject*}($ebp+0x3c)
+    #             )
+    continue
+    end
+
 * How to start at the begin of running script:
 
   Add a temporary catch, as the following command:
